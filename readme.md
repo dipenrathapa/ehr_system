@@ -1,45 +1,71 @@
-# Electronic Health Record (EHR) System
+# 🏥 Electronic Health Record (EHR) Information System
 
-A **Flask-based Electronic Health Record (EHR) system** with a MySQL database backend.  
-This application allows doctors to manage patient records, upload medical reports, and evaluate system usability with a SUS questionnaire.
-
----
-
-## Features
-
-- Doctor registration and login with **secure password hashing**
-- Password reset via **secure token**
-- Patient **CRUD operations** (Create, Read, Update, Delete)
-- Upload and store patient **medical reports/images**
-- Dashboard showing only logged-in doctor's patients
-- SUS (System Usability Scale) questionnaire for feedback
-- Contact form for inquiries
+A secure, web-based **Electronic Health Record (EHR)** system built for the  
+**Information Systems in Health Care (WS 25/26)** course.  
+The platform enables healthcare providers to manage patient and doctor data, authentication, and password recovery securely using modern web technologies.
 
 ---
 
-## Technologies Used
+## 🌐 Live Demo
 
-- **Backend:** Python 3, Flask, Flask-MySQLdb, Werkzeug
-- **Frontend:** HTML, CSS, Bootstrap 5, Jinja2 templates
-- **Database:** MySQL
-- **Deployment:** PythonAnywhere (online) or local machine
-- **Security:** Password hashing, token-based reset
+🔗 **Production Deployment:**  
+👉 [https://dipendrathapa.pythonanywhere.com/](https://dipendrathapa.pythonanywhere.com/)
 
----
-
-## Prerequisites
-
-- Python 3.9+
-- MySQL server (for local run)
-- pip (Python package manager)
-- virtualenv (optional but recommended)
+> Hosted on **PythonAnywhere** using Flask and MySQL.
 
 ---
 
-## Installation
+## 🧰 Tech Stack
 
-1. **Clone the repository**
+### Frontend
+- HTML5  
+- CSS3  
+- Bootstrap 5  
 
+### Backend
+- Python 3  
+- Flask (Web Framework)
+
+### Database
+- MySQL (PythonAnywhere MySQL Service)
+
+### Security & Utilities
+- Flask sessions  
+- Password hashing  
+- Token-based password reset  
+- Environment-based configuration  
+
+---
+
+## ⚙️ Key Features
+
+- Doctor **authentication** (login/logout)  
+- Secure **password reset via token**  
+- **MySQL database** integration  
+- **File uploads** (reports, documents)  
+- **Responsive UI** powered by Bootstrap 5  
+- Production-ready **Flask app deployment**
+
+---
+
+## 🗂 Project Structure
+
+
+---
+
+## 🚀 Run the Project Locally
+
+Follow these steps to set up and run the project on your local machine.
+
+### 1️⃣ Clone the Repository
 ```bash
-git clone https://github.com/yourusername/ehr-flask-app.git
-cd ehr-flask-app
+git clone <your-repo-url>
+cd ehr_system
+
+python -m venv venv
+source venv/bin/activate     # macOS/Linux
+venv\Scripts\activate        # Windows
+
+
+pip install -r requirements.txt
+python app.py
