@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}About - EHR System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <h1 class="mb-4"><i class="bi bi-info-circle text-primary"></i> About EHR System</h1>
+        
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Our Mission</h5>
+                <p class="card-text">
+                    The Electronic Health Record (EHR) System is designed to streamline patient data management 
+                    for healthcare professionals. Our goal is to provide a simple, secure, and efficient solution 
+                    for doctors to maintain comprehensive patient records.
+                </p>
+            </div>
+        </div>
+        
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Features</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i> Secure doctor registration and login</li>
+                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i> Complete patient record management</li>
+                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i> Medical history tracking</li>
+                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i> Report image uploads</li>
+                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i> Private data isolation per doctor</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Technology Stack</h5>
+                <div class="row text-center mt-3">
+                    <div class="col-3">
+                        <i class="bi bi-filetype-py text-primary" style="font-size: 2rem;"></i>
+                        <p class="small mt-2">Python Flask</p>
+                    </div>
+                    <div class="col-3">
+                        <i class="bi bi-database text-primary" style="font-size: 2rem;"></i>
+                        <p class="small mt-2">MySQL</p>
+                    </div>
+                    <div class="col-3">
+                        <i class="bi bi-bootstrap text-primary" style="font-size: 2rem;"></i>
+                        <p class="small mt-2">Bootstrap 5</p>
+                    </div>
+                    <div class="col-3">
+                        <i class="bi bi-filetype-html text-primary" style="font-size: 2rem;"></i>
+                        <p class="small mt-2">HTML5/CSS3</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

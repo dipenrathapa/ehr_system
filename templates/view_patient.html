@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block title %}View Patient - EHR System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-10 mx-auto">
+        <div class="card border-0 shadow">
+            <div class="card-header bg-info text-white py-3 d-flex justify-content-between align-items-center">
+                <h4 class="mb-0"><i class="bi bi-person-badge"></i> {{ patient[2] }}</h4>
+                <div>
+                    <a href="{{ url_for('edit_patient', id=patient[0]) }}" class="btn btn-warning btn-sm">
+                        <i class="bi bi-pencil"></i> Edit
+                    </a>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-light btn-sm">
+                        <i class="bi bi-arrow-left"></i> Back
+                    </a>
+                </div>
+            </div>
+            <div class="card-body p-4">
+                <div class="row">
+                    <!-- Personal Information -->
+                    <div class="col-md-6">
+                        <h5 class="text-primary"><i class="bi bi-person"></i> Personal Information</h5>
+                        <table class="table table-sm">
+                            <tr><th>Full Name:</th><td>{{ patient[2] }}</td></tr>
+                            <tr><th>Gender:</th><td>{{ patient[10] }}</td></tr>
+                            <tr><th>Date of Birth:</th><td>{{ patient[16] or '-' }}</td></tr>
+                            <tr><th>Age:</th><td>{{ patient[3] or '-' }}</td></tr>
+                            <tr><th>Blood Type:</th><td>{{ patient[6] or '-' }}</td></tr>
+                            <tr><th>Weight:</th><td>{{ (patient[4]|string + ' kg') if patient[4] else '-' }}</td></tr>
+                            <tr><th>Height:</th><td>{{ (patient[5]|string + ' cm') if patient[5] else '-' }}</td></tr>
+                        </table>
+                    </div>
+                    
+                    <!-- Contact Information -->
+                    <div class="col-md-6">
+                        <h5 class="text-primary"><i class="bi bi-telephone"></i> Contact Information</h5>
+                        <table class="table table-sm">
+                            <tr><th>Phone:</th><td>{{ patient[7] or '-' }}</td></tr>
+                            <tr><th>Email:</th><td>{{ patient[8] or '-' }}</td></tr>
+                            <tr><th>Address:</th><td>{{ patient[9] or '-' }}</td></tr>
+                        </table>
+                        
+                        <h5 class="text-primary mt-4"><i class="bi bi-calendar"></i> Visit Dates</h5>
+                        <table class="table table-sm">
+                            <tr><th>Admission Date:</th><td>{{ patient[17] or '-' }}</td></tr>
+                            <tr><th>Last Visit:</th><td>{{ patient[18] or '-' }}</td></tr>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Medical Conditions -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <h5 class="text-primary"><i class="bi bi-heart-pulse"></i> Medical Conditions</h5>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% if patient[11] %}<span class="badge bg-danger">Allergies</span>{% endif %}
+                            {% if patient[12] %}<span class="badge bg-warning text-dark">Diabetes</span>{% endif %}
+                            {% if patient[13] %}<span class="badge bg-danger">Hypertension</span>{% endif %}
+                            {% if patient[14] %}<span class="badge bg-danger">Heart Disease</span>{% endif %}
+                            {% if patient[15] %}<span class="badge bg-secondary">Smoker</span>{% endif %}
+                            {% if not (patient[11] or patient[12] or patient[13] or patient[14] or patient[15]) %}
+                            <span class="text-muted">No conditions recorded</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Medical Records -->
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <h5 class="text-primary"><i class="bi bi-file-medical"></i> Medical History</h5>
+                        <p class="border rounded p-2 bg-light">{{ patient[19] or 'No medical history recorded.' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h5 class="text-primary"><i class="bi bi-capsule"></i> Current Medications</h5>
+                        <p class="border rounded p-2 bg-light">{{ patient[20] or 'No medications recorded.' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h5 class="text-primary"><i class="bi bi-clipboard2-pulse"></i> Diagnosis</h5>
+                        <p class="border rounded p-2 bg-light">{{ patient[21] or 'No diagnosis recorded.' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h5 class="text-primary"><i class="bi bi-journal-text"></i> Treatment Notes</h5>
+                        <p class="border rounded p-2 bg-light">{{ patient[22] or 'No treatment notes recorded.' }}</p>
+                    </div>
+                </div>
+                
+                <!-- Report Image -->
+                {% if patient[23] %}
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <h5 class="text-primary"><i class="bi bi-image"></i> Medical Report</h5>
+                        <img src="{{ url_for('static', filename='uploads/' + patient[23]) }}" class="img-fluid rounded border" style="max-height: 400px;" alt="Medical Report">
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

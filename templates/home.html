@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - EHR System{% endblock %}
+
+{% block content %}
+<div class="row align-items-center min-vh-75">
+    <div class="col-lg-6">
+        <h1 class="display-4 fw-bold text-primary">Electronic Health Record System</h1>
+        <p class="lead text-muted">
+            A comprehensive solution for managing patient records securely and efficiently. 
+            Designed specifically for healthcare professionals.
+        </p>
+        <div class="d-flex gap-3 mt-4">
+            {% if not session.get('doctor_id') %}
+                <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-person-plus"></i> Get Started
+                </a>
+                <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-lg">
+                    <i class="bi bi-box-arrow-in-right"></i> Login
+                </a>
+            {% else %}
+                <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-speedometer2"></i> Go to Dashboard
+                </a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-lg-6 text-center">
+        <i class="bi bi-clipboard2-pulse text-primary" style="font-size: 15rem; opacity: 0.8;"></i>
+    </div>
+</div>
+
+<div class="row mt-5 pt-5">
+    <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body text-center">
+                <i class="bi bi-shield-lock text-primary" style="font-size: 3rem;"></i>
+                <h5 class="card-title mt-3">Secure Access</h5>
+                <p class="card-text text-muted">Your patient data is protected with industry-standard encryption and secure authentication.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body text-center">
+                <i class="bi bi-people text-primary" style="font-size: 3rem;"></i>
+                <h5 class="card-title mt-3">Patient Management</h5>
+                <p class="card-text text-muted">Easily manage patient records with complete CRUD operations and file uploads.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body text-center">
+                <i class="bi bi-graph-up text-primary" style="font-size: 3rem;"></i>
+                <h5 class="card-title mt-3">Quick Overview</h5>
+                <p class="card-text text-muted">Dashboard provides instant access to all your patients' information at a glance.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

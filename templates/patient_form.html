@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}Add Patient{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <h2 class="mb-4">Add / Edit Patient</h2>
+    <form method="POST" enctype="multipart/form-data">
+      {{ form.hidden_tag() }}
+      <div class="mb-3">
+        {{ form.first_name.label(class="form-label") }}
+        {{ form.first_name(class="form-control") }}
+      </div>
+      <div class="mb-3">
+        {{ form.last_name.label(class="form-label") }}
+        {{ form.last_name(class="form-control") }}
+      </div>
+      <div class="mb-3">
+        {{ form.dob.label(class="form-label") }}
+        {{ form.dob(class="form-control") }}
+      </div>
+      <div class="mb-3">
+        {{ form.gender.label(class="form-label") }}<br>
+        {{ form.gender() }}
+      </div>
+      <div class="mb-3">
+        {{ form.allergies.label(class="form-label") }}
+        {{ form.allergies(class="form-control") }}
+      </div>
+      <div class="mb-3">
+  {{ form.image.label(class="form-label") }}
+  <input type="file" name="image" class="form-control">
+  {% if patient and patient.image %}
+    <img src="{{ url_for('static', filename='images/' + patient.image) }}" width="100" class="mt-2">
+  {% endif %}
+</div>
+
+      <div class="mb-3">
+        {{ form.medication.label(class="form-label") }}
+        {{ form.medication(class="form-control") }}
+      </div>
+      <div class="mb-3">
+        {{ form.lab_results.label(class="form-label") }}
+        {{ form.lab_results(class="form-control") }}
+      </div>
+      {{ form.submit(class="btn btn-success") }}
+    </form>
+  </div>
+</div>
+{% endblock %}

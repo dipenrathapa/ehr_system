@@ -1,0 +1,68 @@
+/* Custom CSS for EHR System */
+
+/* Body styling */
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #f8f9fa;
+}
+
+/* Ensure main content takes available space */
+main {
+    flex: 1;
+}
+
+/* Hero section styling */
+.min-vh-75 {
+    min-height: 75vh;
+}
+
+/* Card hover effects */
+.card {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+/* Table styling */
+.table th {
+    width: 35%;
+    color: #495057;
+}
+
+/* Badge styling in view page */
+.badge {
+    font-size: 0.85rem;
+    padding: 0.5rem 0.75rem;
+}
+
+/* Form labels */
+.form-label {
+    font-weight: 500;
+    color: #495057;
+}
+
+/* Section headers */
+h5.border-bottom {
+    color: #0d6efd;
+}
+
+/* Navbar brand styling */
+.navbar-brand i {
+    font-size: 1.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .min-vh-75 {
+        min-height: auto;
+        padding: 2rem 0;
+    }
+    
+    .display-4 {
+        font-size: 2rem;
+    }
+}

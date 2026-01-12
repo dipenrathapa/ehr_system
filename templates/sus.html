@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}System Usability Survey{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow p-4">
+            <h4 class="mb-3">System Usability Scale (SUS)</h4>
+            <p>Rate each statement from 1 (Strongly Disagree) to 5 (Strongly Agree)</p>
+
+            <form method="POST" action="{{ url_for('sus') }}">
+                {% for question in questions %}
+                <div class="mb-3">
+                    <label for="q{{ loop.index }}" class="form-label">{{ loop.index }}. {{ question }}</label>
+                    <select class="form-select" id="q{{ loop.index }}" name="q{{ loop.index }}" required>
+                        <option value="">Select</option>
+                        <option value="1">1 - Strongly Disagree</option>
+                        <option value="2">2 - Disagree</option>
+                        <option value="3">3 - Neutral</option>
+                        <option value="4">4 - Agree</option>
+                        <option value="5">5 - Strongly Agree</option>
+                    </select>
+                </div>
+                {% endfor %}
+
+                <button type="submit" class="btn btn-primary w-100 mt-3">Submit Survey</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
