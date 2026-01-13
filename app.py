@@ -15,13 +15,19 @@ import secrets
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_mysqldb import MySQL
+from flask_mail import Mail, Message
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from functools import wraps
 from config import Config
 
+
 # Initialize Flask application
 app = Flask(__name__)
+
+# After app initialization
+app.config.from_object(Config)
+mail = Mail(app)
 
 # Load configuration
 app.config['SECRET_KEY'] = Config.SECRET_KEY
@@ -40,6 +46,40 @@ os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 
 # ==================== HELPER FUNCTIONS ====================
+
+# def send_email(subject, recipient, body):
+#     """Send email using Flask-Mail."""
+#     try:
+#         msg = Message(subject, recipients=[recipient])
+#         msg.body = body
+#         mail.send(msg)
+#     except Exception as e:
+#         print(f"Email sending failed: {e}")
+#         raise e
+    
+
+# def send_email(subject, recipient, body):
+#     """Send email using Flask-Mail."""
+#     try:
+#         msg = Message(subject, recipients=[recipient])
+#         msg.body = body
+#         mail.send(msg)
+#         print(f"Email sent to {recipient}")  # debug print
+#     except Exception as e:
+#         print(f"Email sending failed: {e}")
+#         raise e  # raise so route can see it
+
+def send_email(subject, recipient, body):
+    """Send email using Flask-Mail with debug prints."""
+    try:
+        msg = Message(subject, recipients=[recipient])
+        msg.body = body
+        mail.send(msg)
+        print(f"[DEBUG] Email sent to {recipient} with subject: {subject}")
+    except Exception as e:
+        print(f"[ERROR] Email sending failed: {e}")
+        raise e  # re-raise to catch in route
+
 
 def allowed_file(filename):
     """Check if uploaded file has an allowed extension."""
@@ -76,6 +116,14 @@ def is_strong_password(password):
 
 
 # ==================== STATIC PAGES ====================
+
+@app.route('/test-email')
+def test_email():
+    try:
+        send_email("Test Email", "dipendrathapa044@gmail.com", "This is a test from Flask-Mail.")
+        return "Email sent successfully!"
+    except Exception as e:
+        return f"Error: {e}"
 
 @app.route('/')
 def home():
@@ -117,71 +165,180 @@ def contact():
 
 # ==================== AUTHENTICATION ====================
 
+# @app.route('/register', methods=['GET', 'POST'])
+# def register():
+#     """Doctor registration with password hashing."""
+#     if request.method == 'POST':
+#         # Get form data
+#         full_name = request.form['full_name']
+#         email = request.form['email']
+#         password = request.form['password']
+#         confirm_password = request.form['confirm_password']
+#         specialty = request.form.get('specialty', '')
+#         phone = request.form.get('phone', '')
+        
+#         # Validate passwords match
+#         if password != confirm_password:
+#             flash('Passwords do not match!', 'danger')
+#             return redirect(url_for('register'))
+        
+#         # Validate password strength
+#         if not is_strong_password(password):
+#             flash(
+#                 "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.",
+#                 "danger"
+#             )
+#             return redirect(url_for('register'))
+        
+#         # Hash the password using Werkzeug's security module
+#         password_hash = generate_password_hash(password, method='pbkdf2:sha256', salt_length=8)
+        
+#         try:
+#             # Insert new doctor into database
+#             cur = mysql.connection.cursor()
+#             cur.execute("""
+#                 INSERT INTO doctors (full_name, email, password_hash, specialty, phone)
+#                 VALUES (%s, %s, %s, %s, %s)
+#             """, (full_name, email, password_hash, specialty, phone))
+#             mysql.connection.commit()
+#             cur.close()
+            
+#             flash('Registration successful! Please log in.', 'success')
+#             return redirect(url_for('login'))
+            
+#         except Exception as e:
+#             # Handle duplicate email error
+#             flash('Email already registered. Please use a different email.', 'danger')
+#             return redirect(url_for('register'))
+    
+#     return render_template('register.html')
+
+
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    """Doctor registration with password hashing."""
     if request.method == 'POST':
-        # Get form data
         full_name = request.form['full_name']
         email = request.form['email']
         password = request.form['password']
         confirm_password = request.form['confirm_password']
         specialty = request.form.get('specialty', '')
         phone = request.form.get('phone', '')
-        
-        # Validate passwords match
+
         if password != confirm_password:
             flash('Passwords do not match!', 'danger')
             return redirect(url_for('register'))
-        
-        # Validate password strength
+
         if not is_strong_password(password):
-            flash(
-                "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.",
-                "danger"
-            )
+            flash("Password too weak!", "danger")
             return redirect(url_for('register'))
-        
-        # Hash the password using Werkzeug's security module
+
+        # password_hash = generate_password_hash(password)
         password_hash = generate_password_hash(password, method='pbkdf2:sha256', salt_length=8)
-        
+
+
+        token = secrets.token_urlsafe(32)  # confirmation token
+
         try:
-            # Insert new doctor into database
             cur = mysql.connection.cursor()
             cur.execute("""
-                INSERT INTO doctors (full_name, email, password_hash, specialty, phone)
-                VALUES (%s, %s, %s, %s, %s)
-            """, (full_name, email, password_hash, specialty, phone))
+                INSERT INTO doctors 
+                (full_name, email, password_hash, specialty, phone, confirm_token)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """, (full_name, email, password_hash, specialty, phone, token))
             mysql.connection.commit()
             cur.close()
-            
-            flash('Registration successful! Please log in.', 'success')
+
+            # Send confirmation email
+            confirm_link = url_for('confirm_email', token=token, _external=True)
+            send_email(
+                "Confirm Your Registration",
+                email,
+                f"Hello Dr. {full_name},\n\nPlease click the link to confirm your registration:\n{confirm_link}"
+            )
+
+            flash('Registration successful! Check your email to confirm your account.', 'success')
             return redirect(url_for('login'))
-            
+
         except Exception as e:
-            # Handle duplicate email error
-            flash('Email already registered. Please use a different email.', 'danger')
+            flash('Email already registered.', 'danger')
             return redirect(url_for('register'))
-    
+
     return render_template('register.html')
 
 
+
+@app.route('/confirm/<token>')
+def confirm_email(token):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT id FROM doctors WHERE confirm_token = %s", (token,))
+    doctor = cur.fetchone()
+
+    if doctor:
+        cur.execute("""
+            UPDATE doctors 
+            SET is_active=1, confirm_token=NULL
+            WHERE id=%s
+        """, (doctor[0],))
+        mysql.connection.commit()
+        cur.close()
+        flash("Email confirmed! You can now log in.", "success")
+    else:
+        flash("Invalid or expired confirmation link.", "danger")
+
+    return redirect(url_for('login'))
+
+
+
+# @app.route('/login', methods=['GET', 'POST'])
+# def login():
+#     """Doctor login with password verification."""
+#     if request.method == 'POST':
+#         email = request.form['email']
+#         password = request.form['password']
+        
+#         # Query doctor by email
+#         cur = mysql.connection.cursor()
+#         cur.execute("SELECT id, full_name, password_hash FROM doctors WHERE email = %s", (email,))
+#         doctor = cur.fetchone()
+#         cur.close()
+        
+#         # Verify password using Werkzeug's check_password_hash
+#         if doctor and check_password_hash(doctor[2], password):
+#             # Store doctor info in session
+#             session['doctor_id'] = doctor[0]
+#             session['doctor_name'] = doctor[1]
+#             flash(f'Welcome back, Dr. {doctor[1]}!', 'success')
+#             return redirect(url_for('dashboard'))
+#         else:
+#             flash('Invalid email or password.', 'danger')
+    
+#     return render_template('login.html')
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    """Doctor login with password verification."""
+    """Doctor login with password verification and email confirmation check."""
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
         
-        # Query doctor by email
+        # Query doctor by email, include is_active column
         cur = mysql.connection.cursor()
-        cur.execute("SELECT id, full_name, password_hash FROM doctors WHERE email = %s", (email,))
+        cur.execute(
+            "SELECT id, full_name, password_hash, is_active FROM doctors WHERE email = %s",
+            (email,)
+        )
         doctor = cur.fetchone()
         cur.close()
         
-        # Verify password using Werkzeug's check_password_hash
+        # Verify password
         if doctor and check_password_hash(doctor[2], password):
-            # Store doctor info in session
+            # Check if email is confirmed
+            if not doctor[3]:  # is_active is False/0
+                flash("Please confirm your email before logging in.", "warning")
+                return redirect(url_for('login'))
+            
+            # Continue login
             session['doctor_id'] = doctor[0]
             session['doctor_name'] = doctor[1]
             flash(f'Welcome back, Dr. {doctor[1]}!', 'success')
@@ -191,16 +348,276 @@ def login():
     
     return render_template('login.html')
 
+
+# @app.route('/forgot-password', methods=['GET', 'POST'])
+# def forgot_password():
+#     if request.method == 'POST':
+#         email = request.form['email']
+
+#         cur = mysql.connection.cursor()
+#         cur.execute("SELECT id FROM doctors WHERE email = %s", (email,))
+#         doctor = cur.fetchone()
+
+#         if doctor:
+#             # Generate secure token
+#             token = secrets.token_urlsafe(32)
+
+#             # Save token in database
+#             cur.execute(
+#                 "UPDATE doctors SET reset_token = %s WHERE email = %s",
+#                 (token, email)
+#             )
+#             mysql.connection.commit()
+
+#             # Simulated email (display link)
+#             reset_link = url_for('reset_password', token=token, _external=True)
+
+#             flash(f'Password reset link (simulated email): {reset_link}', 'info')
+#         else:
+#             flash('Email not found.', 'danger')
+
+#         cur.close()
+#         return redirect(url_for('forgot_password'))
+
+#     return render_template('forgot_password.html')
+
+
+# @app.route('/forgot-password', methods=['GET', 'POST'])
+# def forgot_password():
+#     if request.method == 'POST':
+#         email = request.form['email']
+
+#         cur = mysql.connection.cursor()
+#         # Check if doctor exists and if email is confirmed
+#         cur.execute("SELECT id, is_active FROM doctors WHERE email = %s", (email,))
+#         doctor = cur.fetchone()
+
+#         if doctor:
+#             if not doctor[1]:  # is_active = False
+#                 flash("Please confirm your email before resetting your password.", "warning")
+#                 cur.close()
+#                 return redirect(url_for('forgot_password'))
+
+#             # Generate secure token
+#             token = secrets.token_urlsafe(32)
+
+#             # Save token in database
+#             cur.execute(
+#                 "UPDATE doctors SET reset_token = %s WHERE email = %s",
+#                 (token, email)
+#             )
+#             mysql.connection.commit()
+
+#             # Generate reset link and send email
+#             reset_link = url_for('reset_password', token=token, _external=True)
+#             send_email(
+#                 "Password Reset Request",  # Email subject
+#                 email,                     # Recipient
+#                 f"Click this link to reset your password: {reset_link}"  # Email body
+#             )
+
+#             flash("Password reset link sent to your email!", "info")
+
+#         else:
+#             flash('Email not found.', 'danger')
+
+#         cur.close()
+#         return redirect(url_for('forgot_password'))
+
+#     return render_template('forgot_password.html')
+
+# @app.route('/forgot-password', methods=['GET', 'POST'])
+# def forgot_password():
+#     if request.method == 'POST':
+#         email = request.form['email']
+
+#         cur = mysql.connection.cursor()
+#         # Check if doctor exists and if email is confirmed
+#         cur.execute("SELECT id, is_active FROM doctors WHERE email = %s", (email,))
+#         doctor = cur.fetchone()
+
+#         if doctor:
+#             if not doctor[1]:  # is_active = False
+#                 flash("Please confirm your email before resetting your password.", "warning")
+#                 cur.close()
+#                 return redirect(url_for('forgot_password'))
+
+#             # Generate secure token
+#             token = secrets.token_urlsafe(32)
+
+#             # Save token in database
+#             cur.execute(
+#                 "UPDATE doctors SET reset_token = %s WHERE email = %s",
+#                 (token, email)
+#             )
+#             mysql.connection.commit()
+
+#             # Generate reset link
+#             reset_link = url_for('reset_password', token=token, _external=True)
+
+#             # Send email
+#             try:
+#                 send_email(
+#                     "Password Reset Request",
+#                     email,
+#                     f"Click this link to reset your password: {reset_link}"
+#                 )
+#                 flash("Password reset link sent to your email!", "info")
+#             except Exception as e:
+#                 flash(f"Error sending email: {e}", "danger")
+
+#         else:
+#             flash('Email not found.', 'danger')
+
+#         cur.close()
+#         return redirect(url_for('forgot_password'))
+
+#     return render_template('forgot_password.html')
+
+
+
+# @app.route('/forgot-password', methods=['GET', 'POST'])
+# def forgot_password():
+#     if request.method == 'POST':
+#         email = request.form['email'].strip()
+
+#         cur = mysql.connection.cursor()
+#         # Check if doctor exists and is active
+#         cur.execute("SELECT id, is_active FROM doctors WHERE email = %s", (email,))
+#         doctor = cur.fetchone()
+
+#         if not doctor:
+#             flash('Email not found.', 'danger')
+#             cur.close()
+#             return redirect(url_for('forgot_password'))
+
+#         if not doctor[1]:  # is_active = False
+#             flash("Please confirm your email before resetting your password.", "warning")
+#             cur.close()
+#             return redirect(url_for('forgot_password'))
+
+#         # Generate secure token
+#         token = secrets.token_urlsafe(32)
+
+#         # Save token in database
+#         cur.execute(
+#             "UPDATE doctors SET reset_token = %s WHERE email = %s",
+#             (token, email)
+#         )
+#         mysql.connection.commit()
+#         cur.close()
+
+#         # Generate reset link
+#         reset_link = url_for('reset_password', token=token, _external=True)
+
+#         # Try sending email with debug
+#         try:
+#             send_email(
+#                 "Password Reset Request",
+#                 email,
+#                 f"Hello,\n\nClick this link to reset your password:\n{reset_link}\n\nIf you did not request this, please ignore."
+#             )
+#             flash("Password reset link sent to your email!", "success")
+#             print(f"[DEBUG] Reset email sent to {email} with link: {reset_link}")
+#         except Exception as e:
+#             flash(f"Error sending email: {e}", "danger")
+#             print(f"[ERROR] Email sending failed: {e}")
+
+#         return redirect(url_for('forgot_password'))
+
+#     return render_template('forgot_password.html')
+
+# @app.route('/forgot-password', methods=['GET', 'POST'])
+# def forgot_password():
+#     print("[DEBUG] /forgot-password route accessed")
+#     print(f"[DEBUG] Request method: {request.method}")
+
+#     if request.method == 'POST':
+#         print("[DEBUG] POST request received")
+
+#         email = request.form.get('email', '').strip()
+#         print(f"[DEBUG] Submitted email: '{email}'")
+
+#         cur = mysql.connection.cursor()
+#         try:
+#             # Check if doctor exists and is active
+#             cur.execute("SELECT id, is_active FROM doctors WHERE email = %s", (email,))
+#             doctor = cur.fetchone()
+#             print(f"[DEBUG] Doctor query result: {doctor}")
+
+#             if not doctor:
+#                 flash('Email not found.', 'danger')
+#                 print("[DEBUG] Email not found in database")
+#                 return redirect(url_for('forgot_password'))
+
+#             if not doctor[1]:  # is_active = False
+#                 flash("Please confirm your email before resetting your password.", "warning")
+#                 print("[DEBUG] Doctor email not confirmed yet")
+#                 return redirect(url_for('forgot_password'))
+
+#             # Generate secure token
+#             token = secrets.token_urlsafe(32)
+#             print(f"[DEBUG] Generated reset token: {token}")
+
+#             # Save token in database
+#             cur.execute(
+#                 "UPDATE doctors SET reset_token = %s WHERE email = %s",
+#                 (token, email)
+#             )
+#             mysql.connection.commit()
+#             print("[DEBUG] Reset token saved in database")
+
+#             # Generate reset link
+#             reset_link = url_for('reset_password', token=token, _external=True)
+#             print(f"[DEBUG] Reset link generated: {reset_link}")
+
+#             # Send email
+#             try:
+#                 send_email(
+#                     "Password Reset Request",
+#                     email,
+#                     f"Hello,\n\nClick this link to reset your password:\n{reset_link}\n\nIf you did not request this, please ignore."
+#                 )
+#                 flash("Password reset link sent to your email!", "success")
+#                 print(f"[DEBUG] Password reset email sent to: {email}")
+#             except Exception as e:
+#                 flash(f"Error sending email: {e}", "danger")
+#                 print(f"[ERROR] Email sending failed: {e}")
+
+#         except Exception as e:
+#             flash(f"Database error: {e}", "danger")
+#             print(f"[ERROR] Database query failed: {e}")
+
+#         finally:
+#             cur.close()
+#             print("[DEBUG] Database cursor closed")
+
+#         return redirect(url_for('forgot_password'))
+
+#     else:
+#         print("[DEBUG] GET request for forgot-password page")
+#     return render_template('forgot_password.html')
+
+
 @app.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
     if request.method == 'POST':
-        email = request.form['email']
+        email = request.form.get('email', '').strip()
 
         cur = mysql.connection.cursor()
-        cur.execute("SELECT id FROM doctors WHERE email = %s", (email,))
-        doctor = cur.fetchone()
+        try:
+            # Check if doctor exists and is active
+            cur.execute("SELECT id, is_active FROM doctors WHERE email = %s", (email,))
+            doctor = cur.fetchone()
 
-        if doctor:
+            if not doctor:
+                flash('Email not found.', 'danger')
+                return redirect(url_for('forgot_password'))
+
+            if not doctor[1]:  # is_active = False
+                flash("Please confirm your email before resetting your password.", "warning")
+                return redirect(url_for('forgot_password'))
+
             # Generate secure token
             token = secrets.token_urlsafe(32)
 
@@ -211,17 +628,33 @@ def forgot_password():
             )
             mysql.connection.commit()
 
-            # Simulated email (display link)
+            # Generate reset link
             reset_link = url_for('reset_password', token=token, _external=True)
 
-            flash(f'Password reset link (simulated email): {reset_link}', 'info')
-        else:
-            flash('Email not found.', 'danger')
+            # Send email
+            send_email(
+                "Password Reset Request",
+                email,
+                f"Hello,\n\nClick this link to reset your password:\n{reset_link}\n\nIf you did not request this, please ignore."
+            )
 
-        cur.close()
+            flash("Password reset link sent to your email!", "success")
+
+        except Exception as e:
+            flash(f"Error: {e}", "danger")
+
+        finally:
+            cur.close()
+
         return redirect(url_for('forgot_password'))
 
     return render_template('forgot_password.html')
+
+
+
+
+
+
 
 
 # @app.route('/reset-password/<token>', methods=['GET', 'POST'])

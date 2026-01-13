@@ -12,3 +12,12 @@ class Config:
     UPLOAD_FOLDER = 'static/uploads'
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max file size
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'pdf'}
+
+
+    # Email config
+    MAIL_SERVER = 'smtp.gmail.com'
+    MAIL_PORT = 587
+    MAIL_USE_TLS = True
+    MAIL_USERNAME = 'dipendrathapa044@gmail.com'
+    MAIL_PASSWORD = 'v l a c d r f s e v x u c m y i'  # Use App Password if Gmail
+    MAIL_DEFAULT_SENDER = 'dipendrathapa044@gmail.com'

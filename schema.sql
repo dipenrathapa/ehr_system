@@ -20,6 +20,9 @@ CREATE TABLE IF NOT EXISTS doctors (
 ALTER TABLE doctors
 ADD COLUMN reset_token VARCHAR(255) NULL;
 
+ALTER TABLE doctors ADD COLUMN confirm_token VARCHAR(255);
+ALTER TABLE doctors ADD COLUMN is_active TINYINT(1) DEFAULT 0;
+
 -- Table: patients
 -- Stores patient EHR data linked to a specific doctor
 CREATE TABLE IF NOT EXISTS patients (
