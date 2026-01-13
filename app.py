@@ -283,23 +283,23 @@ def reset_password(token):
         password = request.form['password']
         confirm_password = request.form['confirm_password']
 
-        # 1️⃣ Check if passwords match
+        # Check if passwords match
         if password != confirm_password:
             flash('Passwords do not match.', 'danger')
             return redirect(request.url)
 
-        # 2️⃣ Check password strength: at least 8 chars, uppercase, lowercase, number, special char
+        # Check password strength: at least 8 chars, uppercase, lowercase, number, special char
         pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$'
         if not re.match(pattern, password):
             flash('Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.', 'danger')
             return redirect(request.url)
 
-        # 3️⃣ Hash the password
+        # Hash the password
         password_hash = generate_password_hash(
             password, method='pbkdf2:sha256', salt_length=8
         )
 
-        # 4️⃣ Update password & clear token
+        # Update password & clear token
         cur.execute("""
             UPDATE doctors 
             SET password_hash = %s, reset_token = NULL
