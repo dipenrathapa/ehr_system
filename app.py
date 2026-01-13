@@ -1,14 +1,3 @@
-"""
-Electronic Health Record (EHR) System
-Flask Application with MySQL Database
-
-This application provides:
-- Doctor registration and login with password hashing
-- Patient CRUD operations
-- Dashboard showing only logged-in doctor's patients
-- Image upload for medical reports
-"""
-
 import os
 import re
 import secrets
@@ -45,29 +34,7 @@ mysql = MySQL(app)
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 
-# ==================== HELPER FUNCTIONS ====================
-
-# def send_email(subject, recipient, body):
-#     """Send email using Flask-Mail."""
-#     try:
-#         msg = Message(subject, recipients=[recipient])
-#         msg.body = body
-#         mail.send(msg)
-#     except Exception as e:
-#         print(f"Email sending failed: {e}")
-#         raise e
-    
-
-# def send_email(subject, recipient, body):
-#     """Send email using Flask-Mail."""
-#     try:
-#         msg = Message(subject, recipients=[recipient])
-#         msg.body = body
-#         mail.send(msg)
-#         print(f"Email sent to {recipient}")  # debug print
-#     except Exception as e:
-#         print(f"Email sending failed: {e}")
-#         raise e  # raise so route can see it
+# HELPER FUNCTIONS 
 
 def send_email(subject, recipient, body):
     """Send email using Flask-Mail with debug prints."""
@@ -78,7 +45,7 @@ def send_email(subject, recipient, body):
         print(f"[DEBUG] Email sent to {recipient} with subject: {subject}")
     except Exception as e:
         print(f"[ERROR] Email sending failed: {e}")
-        raise e  # re-raise to catch in route
+        raise e 
 
 
 def allowed_file(filename):
@@ -115,7 +82,7 @@ def is_strong_password(password):
     )
 
 
-# ==================== STATIC PAGES ====================
+# STATIC PAGES 
 
 @app.route('/test-email')
 def test_email():
@@ -163,7 +130,7 @@ def contact():
     return render_template('contact.html')
 
 
-# ==================== AUTHENTICATION ====================
+# AUTHENTICATION
 
 # @app.route('/register', methods=['GET', 'POST'])
 # def register():
@@ -334,7 +301,7 @@ def login():
         # Verify password
         if doctor and check_password_hash(doctor[2], password):
             # Check if email is confirmed
-            if not doctor[3]:  # is_active is False/0
+            if not doctor[3]:  
                 flash("Please confirm your email before logging in.", "warning")
                 return redirect(url_for('login'))
             
@@ -348,255 +315,6 @@ def login():
     
     return render_template('login.html')
 
-
-# @app.route('/forgot-password', methods=['GET', 'POST'])
-# def forgot_password():
-#     if request.method == 'POST':
-#         email = request.form['email']
-
-#         cur = mysql.connection.cursor()
-#         cur.execute("SELECT id FROM doctors WHERE email = %s", (email,))
-#         doctor = cur.fetchone()
-
-#         if doctor:
-#             # Generate secure token
-#             token = secrets.token_urlsafe(32)
-
-#             # Save token in database
-#             cur.execute(
-#                 "UPDATE doctors SET reset_token = %s WHERE email = %s",
-#                 (token, email)
-#             )
-#             mysql.connection.commit()
-
-#             # Simulated email (display link)
-#             reset_link = url_for('reset_password', token=token, _external=True)
-
-#             flash(f'Password reset link (simulated email): {reset_link}', 'info')
-#         else:
-#             flash('Email not found.', 'danger')
-
-#         cur.close()
-#         return redirect(url_for('forgot_password'))
-
-#     return render_template('forgot_password.html')
-
-
-# @app.route('/forgot-password', methods=['GET', 'POST'])
-# def forgot_password():
-#     if request.method == 'POST':
-#         email = request.form['email']
-
-#         cur = mysql.connection.cursor()
-#         # Check if doctor exists and if email is confirmed
-#         cur.execute("SELECT id, is_active FROM doctors WHERE email = %s", (email,))
-#         doctor = cur.fetchone()
-
-#         if doctor:
-#             if not doctor[1]:  # is_active = False
-#                 flash("Please confirm your email before resetting your password.", "warning")
-#                 cur.close()
-#                 return redirect(url_for('forgot_password'))
-
-#             # Generate secure token
-#             token = secrets.token_urlsafe(32)
-
-#             # Save token in database
-#             cur.execute(
-#                 "UPDATE doctors SET reset_token = %s WHERE email = %s",
-#                 (token, email)
-#             )
-#             mysql.connection.commit()
-
-#             # Generate reset link and send email
-#             reset_link = url_for('reset_password', token=token, _external=True)
-#             send_email(
-#                 "Password Reset Request",  # Email subject
-#                 email,                     # Recipient
-#                 f"Click this link to reset your password: {reset_link}"  # Email body
-#             )
-
-#             flash("Password reset link sent to your email!", "info")
-
-#         else:
-#             flash('Email not found.', 'danger')
-
-#         cur.close()
-#         return redirect(url_for('forgot_password'))
-
-#     return render_template('forgot_password.html')
-
-# @app.route('/forgot-password', methods=['GET', 'POST'])
-# def forgot_password():
-#     if request.method == 'POST':
-#         email = request.form['email']
-
-#         cur = mysql.connection.cursor()
-#         # Check if doctor exists and if email is confirmed
-#         cur.execute("SELECT id, is_active FROM doctors WHERE email = %s", (email,))
-#         doctor = cur.fetchone()
-
-#         if doctor:
-#             if not doctor[1]:  # is_active = False
-#                 flash("Please confirm your email before resetting your password.", "warning")
-#                 cur.close()
-#                 return redirect(url_for('forgot_password'))
-
-#             # Generate secure token
-#             token = secrets.token_urlsafe(32)
-
-#             # Save token in database
-#             cur.execute(
-#                 "UPDATE doctors SET reset_token = %s WHERE email = %s",
-#                 (token, email)
-#             )
-#             mysql.connection.commit()
-
-#             # Generate reset link
-#             reset_link = url_for('reset_password', token=token, _external=True)
-
-#             # Send email
-#             try:
-#                 send_email(
-#                     "Password Reset Request",
-#                     email,
-#                     f"Click this link to reset your password: {reset_link}"
-#                 )
-#                 flash("Password reset link sent to your email!", "info")
-#             except Exception as e:
-#                 flash(f"Error sending email: {e}", "danger")
-
-#         else:
-#             flash('Email not found.', 'danger')
-
-#         cur.close()
-#         return redirect(url_for('forgot_password'))
-
-#     return render_template('forgot_password.html')
-
-
-
-# @app.route('/forgot-password', methods=['GET', 'POST'])
-# def forgot_password():
-#     if request.method == 'POST':
-#         email = request.form['email'].strip()
-
-#         cur = mysql.connection.cursor()
-#         # Check if doctor exists and is active
-#         cur.execute("SELECT id, is_active FROM doctors WHERE email = %s", (email,))
-#         doctor = cur.fetchone()
-
-#         if not doctor:
-#             flash('Email not found.', 'danger')
-#             cur.close()
-#             return redirect(url_for('forgot_password'))
-
-#         if not doctor[1]:  # is_active = False
-#             flash("Please confirm your email before resetting your password.", "warning")
-#             cur.close()
-#             return redirect(url_for('forgot_password'))
-
-#         # Generate secure token
-#         token = secrets.token_urlsafe(32)
-
-#         # Save token in database
-#         cur.execute(
-#             "UPDATE doctors SET reset_token = %s WHERE email = %s",
-#             (token, email)
-#         )
-#         mysql.connection.commit()
-#         cur.close()
-
-#         # Generate reset link
-#         reset_link = url_for('reset_password', token=token, _external=True)
-
-#         # Try sending email with debug
-#         try:
-#             send_email(
-#                 "Password Reset Request",
-#                 email,
-#                 f"Hello,\n\nClick this link to reset your password:\n{reset_link}\n\nIf you did not request this, please ignore."
-#             )
-#             flash("Password reset link sent to your email!", "success")
-#             print(f"[DEBUG] Reset email sent to {email} with link: {reset_link}")
-#         except Exception as e:
-#             flash(f"Error sending email: {e}", "danger")
-#             print(f"[ERROR] Email sending failed: {e}")
-
-#         return redirect(url_for('forgot_password'))
-
-#     return render_template('forgot_password.html')
-
-# @app.route('/forgot-password', methods=['GET', 'POST'])
-# def forgot_password():
-#     print("[DEBUG] /forgot-password route accessed")
-#     print(f"[DEBUG] Request method: {request.method}")
-
-#     if request.method == 'POST':
-#         print("[DEBUG] POST request received")
-
-#         email = request.form.get('email', '').strip()
-#         print(f"[DEBUG] Submitted email: '{email}'")
-
-#         cur = mysql.connection.cursor()
-#         try:
-#             # Check if doctor exists and is active
-#             cur.execute("SELECT id, is_active FROM doctors WHERE email = %s", (email,))
-#             doctor = cur.fetchone()
-#             print(f"[DEBUG] Doctor query result: {doctor}")
-
-#             if not doctor:
-#                 flash('Email not found.', 'danger')
-#                 print("[DEBUG] Email not found in database")
-#                 return redirect(url_for('forgot_password'))
-
-#             if not doctor[1]:  # is_active = False
-#                 flash("Please confirm your email before resetting your password.", "warning")
-#                 print("[DEBUG] Doctor email not confirmed yet")
-#                 return redirect(url_for('forgot_password'))
-
-#             # Generate secure token
-#             token = secrets.token_urlsafe(32)
-#             print(f"[DEBUG] Generated reset token: {token}")
-
-#             # Save token in database
-#             cur.execute(
-#                 "UPDATE doctors SET reset_token = %s WHERE email = %s",
-#                 (token, email)
-#             )
-#             mysql.connection.commit()
-#             print("[DEBUG] Reset token saved in database")
-
-#             # Generate reset link
-#             reset_link = url_for('reset_password', token=token, _external=True)
-#             print(f"[DEBUG] Reset link generated: {reset_link}")
-
-#             # Send email
-#             try:
-#                 send_email(
-#                     "Password Reset Request",
-#                     email,
-#                     f"Hello,\n\nClick this link to reset your password:\n{reset_link}\n\nIf you did not request this, please ignore."
-#                 )
-#                 flash("Password reset link sent to your email!", "success")
-#                 print(f"[DEBUG] Password reset email sent to: {email}")
-#             except Exception as e:
-#                 flash(f"Error sending email: {e}", "danger")
-#                 print(f"[ERROR] Email sending failed: {e}")
-
-#         except Exception as e:
-#             flash(f"Database error: {e}", "danger")
-#             print(f"[ERROR] Database query failed: {e}")
-
-#         finally:
-#             cur.close()
-#             print("[DEBUG] Database cursor closed")
-
-#         return redirect(url_for('forgot_password'))
-
-#     else:
-#         print("[DEBUG] GET request for forgot-password page")
-#     return render_template('forgot_password.html')
 
 
 @app.route('/forgot-password', methods=['GET', 'POST'])
@@ -757,20 +475,18 @@ def logout():
     return redirect(url_for('home'))
 
 
-# ==================== DASHBOARD & PATIENT CRUD ====================
-
+# DASHBOARD & PATIENT CRUD
 @app.route('/dashboard')
 @login_required
 def dashboard():
     """Dashboard showing only the logged-in doctor's patients."""
     doctor_id = session['doctor_id']
     
-    # Fetch only patients belonging to this doctor
     cur = mysql.connection.cursor()
     cur.execute("""
         SELECT id, full_name, age, gender, phone, last_visit_date, diagnosis
-        FROM patients 
-        WHERE doctor_id = %s 
+        FROM patients
+        WHERE doctor_id = %s
         ORDER BY created_at DESC
     """, (doctor_id,))
     patients = cur.fetchall()
@@ -785,36 +501,42 @@ def add_patient():
     """Add a new patient EHR record."""
     if request.method == 'POST':
         doctor_id = session['doctor_id']
-        
-        # Handle image upload
+
+        # ---------- Image Upload ----------
         report_image = None
         if 'report_image' in request.files:
             file = request.files['report_image']
             if file and file.filename and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
-                # Add timestamp to filename to avoid duplicates
                 filename = f"{doctor_id}_{filename}"
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 report_image = filename
-        
-        # Get checkbox values (returns None if unchecked)
+
+        # ---------- Checkbox Values ----------
         has_allergies = 1 if request.form.get('has_allergies') else 0
         has_diabetes = 1 if request.form.get('has_diabetes') else 0
         has_hypertension = 1 if request.form.get('has_hypertension') else 0
         has_heart_disease = 1 if request.form.get('has_heart_disease') else 0
         is_smoker = 1 if request.form.get('is_smoker') else 0
-        
+
         try:
             cur = mysql.connection.cursor()
             cur.execute("""
                 INSERT INTO patients (
                     doctor_id, full_name, age, weight, height, blood_type,
                     phone, email, address, gender,
-                    has_allergies, has_diabetes, has_hypertension, has_heart_disease, is_smoker,
+                    has_allergies, has_diabetes, has_hypertension,
+                    has_heart_disease, is_smoker,
                     date_of_birth, admission_date, last_visit_date,
-                    medical_history, current_medications, diagnosis, treatment_notes,
-                    report_image
-                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    medical_history, current_medications,
+                    immunization_status, lab_results, billing_info,
+                    diagnosis, treatment_notes, report_image
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+                          %s, %s, %s, %s, %s,
+                          %s, %s, %s,
+                          %s, %s,
+                          %s, %s, %s,
+                          %s, %s, %s)
             """, (
                 doctor_id,
                 request.form['full_name'],
@@ -826,25 +548,29 @@ def add_patient():
                 request.form.get('email'),
                 request.form.get('address'),
                 request.form['gender'],
-                has_allergies, has_diabetes, has_hypertension, has_heart_disease, is_smoker,
+                has_allergies, has_diabetes, has_hypertension,
+                has_heart_disease, is_smoker,
                 request.form.get('date_of_birth') or None,
                 request.form.get('admission_date') or None,
                 request.form.get('last_visit_date') or None,
                 request.form.get('medical_history'),
                 request.form.get('current_medications'),
+                request.form.get('immunization_status'),
+                request.form.get('lab_results'),
+                request.form.get('billing_info'),
                 request.form.get('diagnosis'),
                 request.form.get('treatment_notes'),
                 report_image
             ))
             mysql.connection.commit()
             cur.close()
-            
+
             flash('Patient record added successfully!', 'success')
             return redirect(url_for('dashboard'))
-            
+
         except Exception as e:
             flash(f'Error adding patient: {str(e)}', 'danger')
-    
+
     return render_template('add_patient.html')
 
 
@@ -853,19 +579,18 @@ def add_patient():
 def edit_patient(id):
     """Edit an existing patient EHR record."""
     doctor_id = session['doctor_id']
-    
-    # Verify patient belongs to this doctor
+
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM patients WHERE id = %s AND doctor_id = %s", (id, doctor_id))
     patient = cur.fetchone()
-    
+
     if not patient:
         flash('Patient not found or access denied.', 'danger')
         return redirect(url_for('dashboard'))
-    
+
     if request.method == 'POST':
-        # Handle image upload
-        report_image = patient[23]  # Keep existing image by default
+        # ---------- Image Upload ----------
+        report_image = patient[26]  # updated index after new columns
         if 'report_image' in request.files:
             file = request.files['report_image']
             if file and file.filename and allowed_file(file.filename):
@@ -873,14 +598,14 @@ def edit_patient(id):
                 filename = f"{doctor_id}_{filename}"
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 report_image = filename
-        
-        # Get checkbox values
+
+        # ---------- Checkbox Values ----------
         has_allergies = 1 if request.form.get('has_allergies') else 0
         has_diabetes = 1 if request.form.get('has_diabetes') else 0
         has_hypertension = 1 if request.form.get('has_hypertension') else 0
         has_heart_disease = 1 if request.form.get('has_heart_disease') else 0
         is_smoker = 1 if request.form.get('is_smoker') else 0
-        
+
         try:
             cur.execute("""
                 UPDATE patients SET
@@ -889,8 +614,10 @@ def edit_patient(id):
                     has_allergies = %s, has_diabetes = %s, has_hypertension = %s,
                     has_heart_disease = %s, is_smoker = %s,
                     date_of_birth = %s, admission_date = %s, last_visit_date = %s,
-                    medical_history = %s, current_medications = %s, diagnosis = %s,
-                    treatment_notes = %s, report_image = %s
+                    medical_history = %s, current_medications = %s,
+                    immunization_status = %s, lab_results = %s, billing_info = %s,
+                    diagnosis = %s, treatment_notes = %s,
+                    report_image = %s
                 WHERE id = %s AND doctor_id = %s
             """, (
                 request.form['full_name'],
@@ -902,12 +629,16 @@ def edit_patient(id):
                 request.form.get('email'),
                 request.form.get('address'),
                 request.form['gender'],
-                has_allergies, has_diabetes, has_hypertension, has_heart_disease, is_smoker,
+                has_allergies, has_diabetes, has_hypertension,
+                has_heart_disease, is_smoker,
                 request.form.get('date_of_birth') or None,
                 request.form.get('admission_date') or None,
                 request.form.get('last_visit_date') or None,
                 request.form.get('medical_history'),
                 request.form.get('current_medications'),
+                request.form.get('immunization_status'),
+                request.form.get('lab_results'),
+                request.form.get('billing_info'),
                 request.form.get('diagnosis'),
                 request.form.get('treatment_notes'),
                 report_image,
@@ -915,13 +646,13 @@ def edit_patient(id):
             ))
             mysql.connection.commit()
             cur.close()
-            
+
             flash('Patient record updated successfully!', 'success')
             return redirect(url_for('dashboard'))
-            
+
         except Exception as e:
             flash(f'Error updating patient: {str(e)}', 'danger')
-    
+
     cur.close()
     return render_template('edit_patient.html', patient=patient)
 
@@ -931,18 +662,17 @@ def edit_patient(id):
 def delete_patient(id):
     """Delete a patient EHR record."""
     doctor_id = session['doctor_id']
-    
+
     try:
         cur = mysql.connection.cursor()
-        # Delete only if patient belongs to this doctor
         cur.execute("DELETE FROM patients WHERE id = %s AND doctor_id = %s", (id, doctor_id))
         mysql.connection.commit()
         cur.close()
-        
+
         flash('Patient record deleted successfully!', 'success')
     except Exception as e:
         flash(f'Error deleting patient: {str(e)}', 'danger')
-    
+
     return redirect(url_for('dashboard'))
 
 
@@ -951,67 +681,21 @@ def delete_patient(id):
 def view_patient(id):
     """View detailed patient record."""
     doctor_id = session['doctor_id']
-    
+
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM patients WHERE id = %s AND doctor_id = %s", (id, doctor_id))
     patient = cur.fetchone()
     cur.close()
-    
+
     if not patient:
         flash('Patient not found or access denied.', 'danger')
         return redirect(url_for('dashboard'))
-    
+
     return render_template('view_patient.html', patient=patient)
 
 
-# @app.route('/sus', methods=['GET', 'POST'])
-# def sus():
-#     questions = [
-#         "I think that I would like to use this system frequently.",
-#         "I found the system unnecessarily complex.",
-#         "I thought the system was easy to use.",
-#         "I think that I would need the support of a technical person to be able to use this system.",
-#         "I found the various functions in this system were well integrated.",
-#         "I thought there was too much inconsistency in this system.",
-#         "I would imagine that most people would learn to use this system very quickly.",
-#         "I found the system very cumbersome to use.",
-#         "I felt very confident using the system.",
-#         "I needed to learn a lot of things before I could get going with this system."
-#     ]
 
-#     if request.method == 'POST':
-#         try:
-#             # Collect answers as integers
-#             answers = [int(request.form.get(f"q{i}", 0)) for i in range(1, 11)]
-
-#             # Compute SUS score
-#             sus_score = 0
-#             for idx, ans in enumerate(answers):
-#                 if (idx + 1) % 2 != 0:  # odd questions
-#                     sus_score += ans - 1
-#                 else:  # even questions
-#                     sus_score += 5 - ans
-#             sus_score *= 2.5  # final score out of 100
-
-#             # Insert into database
-#             cur = mysql.connection.cursor()
-#             cur.execute("""
-#                 INSERT INTO sus_responses 
-#                 (doctor_id, q1,q2,q3,q4,q5,q6,q7,q8,q9,q10, sus_score) 
-#                 VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-#             """, (session.get('doctor_id'), *answers, sus_score))
-#             mysql.connection.commit()
-#             cur.close()
-
-#             flash(f"Thank you! Your responses have been recorded. SUS Score: {sus_score}", "success")
-#             return redirect(url_for('home'))
-
-#         except Exception as e:
-#             flash(f"Error: {e}", "danger")
-#             return redirect(url_for('sus'))
-
-#     return render_template('sus.html', questions=questions)
-
+# SUS QUESTIONNAIRE
 @app.route('/sus', methods=['GET', 'POST'])
 def sus():
     questions = [
@@ -1068,7 +752,7 @@ def sus():
 
 
 
-# ==================== RUN APPLICATION ====================
+#RUN APPLICATION
 
 if __name__ == '__main__':
     # Run in debug mode for development

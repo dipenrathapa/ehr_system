@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-
 {% block title %}View Patient - EHR System{% endblock %}
 
 {% block content %}
@@ -33,7 +32,7 @@
                         </table>
                     </div>
                     
-                    <!-- Contact Information -->
+                    <!-- Contact & Visit Information -->
                     <div class="col-md-6">
                         <h5 class="text-primary"><i class="bi bi-telephone"></i> Contact Information</h5>
                         <table class="table table-sm">
@@ -78,21 +77,33 @@
                         <p class="border rounded p-2 bg-light">{{ patient[20] or 'No medications recorded.' }}</p>
                     </div>
                     <div class="col-md-6">
+                        <h5 class="text-primary"><i class="bi bi-shield-check"></i> Immunization Status</h5>
+                        <p class="border rounded p-2 bg-light">{{ patient[21] or 'Not recorded.' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h5 class="text-primary"><i class="bi bi-beaker"></i> Lab Results</h5>
+                        <p class="border rounded p-2 bg-light">{{ patient[22] or 'Not recorded.' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h5 class="text-primary"><i class="bi bi-receipt"></i> Billing Info</h5>
+                        <p class="border rounded p-2 bg-light">{{ patient[23] or 'Not recorded.' }}</p>
+                    </div>
+                    <div class="col-md-6">
                         <h5 class="text-primary"><i class="bi bi-clipboard2-pulse"></i> Diagnosis</h5>
-                        <p class="border rounded p-2 bg-light">{{ patient[21] or 'No diagnosis recorded.' }}</p>
+                        <p class="border rounded p-2 bg-light">{{ patient[24] or 'No diagnosis recorded.' }}</p>
                     </div>
                     <div class="col-md-6">
                         <h5 class="text-primary"><i class="bi bi-journal-text"></i> Treatment Notes</h5>
-                        <p class="border rounded p-2 bg-light">{{ patient[22] or 'No treatment notes recorded.' }}</p>
+                        <p class="border rounded p-2 bg-light">{{ patient[25] or 'No treatment notes recorded.' }}</p>
                     </div>
                 </div>
                 
                 <!-- Report Image -->
-                {% if patient[23] %}
+                {% if patient[26] %}
                 <div class="row mt-4">
                     <div class="col-12">
                         <h5 class="text-primary"><i class="bi bi-image"></i> Medical Report</h5>
-                        <img src="{{ url_for('static', filename='uploads/' + patient[23]) }}" class="img-fluid rounded border" style="max-height: 400px;" alt="Medical Report">
+                        <img src="{{ url_for('static', filename='uploads/' + patient[26]) }}" class="img-fluid rounded border" style="max-height: 400px;" alt="Medical Report">
                     </div>
                 </div>
                 {% endif %}

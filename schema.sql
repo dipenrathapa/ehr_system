@@ -73,6 +73,11 @@ CREATE TABLE IF NOT EXISTS patients (
 
 );
 
+ALTER TABLE patients
+ADD COLUMN immunization_status TEXT AFTER current_medications,
+ADD COLUMN lab_results TEXT AFTER immunization_status,
+ADD COLUMN billing_info VARCHAR(255) AFTER lab_results;
+
 -- Create indexes for better query performance
 CREATE INDEX idx_patients_doctor ON patients(doctor_id);
 CREATE INDEX idx_doctors_email ON doctors(email);
