@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>System Usability Survey</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+/* Compact styles for report */
+body { font-size: 0.65rem; line-height: 1.1; }
+h4 { font-size: 0.85rem; margin-bottom: 0.2rem; }
+.form-label { font-size: 0.65rem; margin-bottom: 0.15rem; }
+.form-select { font-size: 0.65rem; padding: 0.2rem 0.25rem; }
+.mb-3 { margin-bottom: 0.25rem !important; }
+.navbar-brand, .nav-link { font-size: 0.65rem; padding: 0.15rem 0.25rem; }
+.card-body { padding: 0.35rem 0.5rem; }
+.card { padding: 0.25rem; }
+footer p { font-size: 0.65rem; margin-bottom: 0; }
+button.btn { font-size: 0.65rem; padding: 0.25rem; }
+</style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary py-1">
+<div class="container">
+<a class="navbar-brand" href="/"><i class="bi bi-heart-pulse"></i> EHR System</a>
+<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
+<div class="collapse navbar-collapse" id="navbarNav">
+<ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="/"><i class="bi bi-house"></i> Home</a></li>
+<li class="nav-item"><a class="nav-link" href="/about"><i class="bi bi-info-circle"></i> About</a></li>
+<li class="nav-item"><a class="nav-link" href="/contact"><i class="bi bi-envelope"></i> Contact</a></li>
+<li class="nav-item"><a class="nav-link" href="/sus"><i class="bi bi-card-checklist"></i> Usability Survey</a></li>
+</ul>
+<ul class="navbar-nav">
+<li class="nav-item"><a class="nav-link" href="/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+<li class="nav-item"><span class="nav-link text-light"><i class="bi bi-person-circle"></i> Dr. dojan</span></li>
+<li class="nav-item"><a class="nav-link" href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+</ul>
+</div>
+</div>
+</nav>
+
+<main class="container my-1">
+<div class="row justify-content-center">
+<div class="col-md-8">
+<div class="card shadow p-2">
+<h4 class="mb-2">System Usability Scale (SUS)</h4>
+<p style="font-size:0.6rem;">Rate each statement from 1 (Strongly Disagree) to 5 (Strongly Agree)</p>
+
+<form method="POST" action="/sus">
+<!-- Loop through questions -->
+<div class="mb-3">
+<label for="q1" class="form-label">1. I think that I would like to use this system frequently.</label>
+<select class="form-select" id="q1" name="q1" required>
+<option value="">Select</option>
+<option value="1">1 - Strongly Disagree</option>
+<option value="2">2 - Disagree</option>
+<option value="3">3 - Neutral</option>
+<option value="4">4 - Agree</option>
+<option value="5">5 - Strongly Agree</option>
+</select>
+</div>
+
+<div class="mb-3">
+<label for="q2" class="form-label">2. I found the system unnecessarily complex.</label>
+<select class="form-select" id="q2" name="q2" required>
+<option value="">Select</option>
+<option value="1">1 - Strongly Disagree</option>
+<option value="2">2 - Disagree</option>
+<option value="3">3 - Neutral</option>
+<option value="4">4 - Agree</option>
+<option value="5">5 - Strongly Agree</option>
+</select>
+</div>
+
+<div class="mb-3">
+<label for="q3" class="form-label">3. I thought the system was easy to use.</label>
+<select class="form-select" id="q3" name="q3" required>
+<option value="">Select</option>
+<option value="1">1 - Strongly Disagree</option>
+<option value="2">2 - Disagree</option>
+<option value="3">3 - Neutral</option>
+<option value="4">4 - Agree</option>
+<option value="5">5 - Strongly Agree</option>
+</select>
+</div>
+
+<div class="mb-3">
+<label for="q4" class="form-label">4. I think that I would need the support of a technical person to be able to use this system.</label>
+<select class="form-select" id="q4" name="q4" required>
+<option value="">Select</option>
+<option value="1">1 - Strongly Disagree</option>
+<option value="2">2 - Disagree</option>
+<option value="3">3 - Neutral</option>
+<option value="4">4 - Agree</option>
+<option value="5">5 - Strongly Agree</option>
+</select>
+</div>
+
+<div class="mb-3">
+<label for="q5" class="form-label">5. I found the various functions in this system were well integrated.</label>
+<select class="form-select" id="q5" name="q5" required>
+<option value="">Select</option>
+<option value="1">1 - Strongly Disagree</option>
+<option value="2">2 - Disagree</option>
+<option value="3">3 - Neutral</option>
+<option value="4">4 - Agree</option>
+<option value="5">5 - Strongly Agree</option>
+</select>
+</div>
+
+<div class="mb-3">
+<label for="q6" class="form-label">6. I thought there was too much inconsistency in this system.</label>
+<select class="form-select" id="q6" name="q6" required>
+<option value="">Select</option>
+<option value="1">1 - Strongly Disagree</option>
+<option value="2">2 - Disagree</option>
+<option value="3">3 - Neutral</option>
+<option value="4">4 - Agree</option>
+<option value="5">5 - Strongly Agree</option>
+</select>
+</div>
+
+<div class="mb-3">
+<label for="q7" class="form-label">7. I would imagine that most people would learn to use this system very quickly.</label>
+<select class="form-select" id="q7" name="q7" required>
+<option value="">Select</option>
+<option value="1">1 - Strongly Disagree</option>
+<option value="2">2 - Disagree</option>
+<option value="3">3 - Neutral</option>
+<option value="4">4 - Agree</option>
+<option value="5">5 - Strongly Agree</option>
+</select>
+</div>
+
+<div class="mb-3">
+<label for="q8" class="form-label">8. I found the system very cumbersome to use.</label>
+<select class="form-select" id="q8" name="q8" required>
+<option value="">Select</option>
+<option value="1">1 - Strongly Disagree</option>
+<option value="2">2 - Disagree</option>
+<option value="3">3 - Neutral</option>
+<option value="4">4 - Agree</option>
+<option value="5">5 - Strongly Agree</option>
+</select>
+</div>
+
+<div class="mb-3">
+<label for="q9" class="form-label">9. I felt very confident using the system.</label>
+<select class="form-select" id="q9" name="q9" required>
+<option value="">Select</option>
+<option value="1">1 - Strongly Disagree</option>
+<option value="2">2 - Disagree</option>
+<option value="3">3 - Neutral</option>
+<option value="4">4 - Agree</option>
+<option value="5">5 - Strongly Agree</option>
+</select>
+</div>
+
+<div class="mb-3">
+<label for="q10" class="form-label">10. I needed to learn a lot of things before I could get going with this system.</label>
+<select class="form-select" id="q10" name="q10" required>
+<option value="">Select</option>
+<option value="1">1 - Strongly Disagree</option>
+<option value="2">2 - Disagree</option>
+<option value="3">3 - Neutral</option>
+<option value="4">4 - Agree</option>
+<option value="5">5 - Strongly Agree</option>
+</select>
+</div>
+
+<button type="submit" class="btn btn-primary w-100 mt-2">Submit Survey</button>
+</form>
+
+</div>
+</div>
+</div>
+</main>
+
+<footer class="bg-dark text-light py-1 mt-auto">
+<div class="container text-center"><p class="mb-0">&copy; 2026 EHR System.</p></div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
