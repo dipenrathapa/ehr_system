@@ -11,7 +11,6 @@ The system is designed for doctors to securely manage patient records through a 
 ## Demo
 https://dipendrathapa.pythonanywhere.com/
 
-**Note:** email verification in demo is stillmissing(Tried but because of version incompatability maybe in PythonAnywhere, unable to work around. I have anothere solution that works fine for Demo as well. Email verification works well in localhost though) 
 
 ## Technologies Used
 
