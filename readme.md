@@ -7,13 +7,6 @@ The system is designed for doctors to securely manage patient records through a 
 
 ---
 
-## Project Description
-
-The EHR system supports the digital storage and management of patient information. It replaces paper-based records with a secure database-driven solution. Each doctor can access and manage only their own patients’ data.
-
-The system includes functionality for managing patient demographics, medical history, diagnosis, medications, immunization information, billing details, and medical report uploads. A usability evaluation using the System Usability Scale (SUS) is also included.
-
----
 
 ## Demo
 https://dipendrathapa.pythonanywhere.com/
