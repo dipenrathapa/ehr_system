@@ -15,6 +15,11 @@ The system includes functionality for managing patient demographics, medical his
 
 ---
 
+## Demo
+https://dipendrathapa.pythonanywhere.com/
+
+**Note:** email verification in demo is stillmissing(Tried but because of version incompatability maybe in PythonAnywhere, unable to work around. But I have anothere solution that works fine) 
+
 ## Technologies Used
 
 **Frontend**
