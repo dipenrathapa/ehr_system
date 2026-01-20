@@ -11,7 +11,9 @@ The system is designed for doctors to securely manage patient records through a 
 ## Demo
 https://dipendrathapa.pythonanywhere.com/
 
-**Note:** This demo works well except for email confirmation and validation, so I have to workaround to make the website still work without email confirmation and validation. I wasn't able to corporate this in demo website(because of system in pythonanywhere breaking maytime when I put that in website but in localhost it works fine and the versions are compatable, website runs smoothly). 
+**Note:** This demo functions correctly for all core features except email confirmation and validation. To ensure the website remains fully usable, these features have been temporarily disabled as a workaround.
+
+While email confirmation and validation work as expected in the local development environment, integrating them into the demo deployment caused stability issues on PythonAnywhere, where the system frequently breaks despite compatible versions. The application otherwise runs smoothly and reliably.
 
 
 ## Technologies Used
